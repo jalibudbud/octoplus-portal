@@ -12,6 +12,30 @@ to `release-todo.md`.
       still unverified
 - [ ] Team stack decision (Node/NestJS vs Python/FastAPI)
 
+## Phase 1 — Frontend POC (started 2026-07-16)
+
+**Goal:** an interface where users can perform the mapping — create an
+Octo+ file without knowing the French format.
+
+Example flow:
+
+1. User picks the file he wants to create. Source: the Octo+ repositories
+   documented in `docs/reference/`. Metadata (`INT01`) is split into its
+   individual items — Category, Color, Size, Supplier, Store — so the user
+   picks e.g. "Category" directly and is never confused by the shared
+   underlying format.
+2. POC-level functionality only: a form where the user populates the
+   values (grid/import/delivery come later).
+
+Tasks:
+
+- [ ] Repository picker — list entries from `docs/reference/` with
+      metadata split per item (Category, Color, Size, Supplier, Store,
+      SKU, Barcode, Stock on hand, Bulk printing, Delivery notice)
+- [ ] Schema-driven form per repository: English labels/help text, required
+      markers, enum dropdowns, defaults pre-filled (per the reference docs)
+- [ ] Show the resulting Octo+ row(s)/CSV so the EN→FR mapping is visible
+
 ## Future improvements
 
 - [ ] Entra ID app registration (SSO)

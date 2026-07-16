@@ -17,7 +17,11 @@ anything here goes stale; this file is a working summary of it.
 Pre-code / Phase 0 (discovery). Only planning docs exist so far — no
 application code, no chosen repo layout.
 
-- Frontend is decided: React + TypeScript.
+- Frontend is decided: **Vite + React Router (SPA) + TypeScript, with
+  shadcn/ui + Tailwind**. Plain SPA on purpose — interactive internal tool,
+  no SSR/SEO, no server data caching (at most some config caching). Don't
+  introduce Next.js/Remix or low-code builders (Retool was considered and
+  rejected).
 - API stack is **not** decided: Node/NestJS vs Python/FastAPI, to be picked in
   Phase 0 by team skills. Don't assume one without checking
   `docs/project-plan.md` §6 and `docs/development/todo.md` first.

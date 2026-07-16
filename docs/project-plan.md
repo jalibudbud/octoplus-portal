@@ -225,7 +225,7 @@ Octo+ is developing a webhook that posts ingestion events to a given URL. Today,
 
 | Layer | Choice | Rationale |
 |---|---|---|
-| Frontend | React + TypeScript | Schema-driven forms + data grid |
+| Frontend | **Vite + React Router (SPA)** + TypeScript, shadcn/ui + Tailwind | Decided 2026-07-16. Pure interactive internal app behind SSO — no SEO/SSR need, no server data caching (only some config caching); static bundle deploys anywhere; keeps frontend independent of the Node-vs-Python API decision. Next.js/Remix server layers add no value here; Retool rejected (low-code lock-in, weak fit for schema-driven forms/CSV mapping, and this portal is the long-term product) |
 | API | Node/NestJS *or* Python/FastAPI | Decide in Phase 0 by team skills (2–3 devs — pick the stack the team is fastest in) |
 | Database | PostgreSQL | Schemas, datasets, customers, jobs, audit |
 | Object storage | S3-compatible | Artifacts + source data |

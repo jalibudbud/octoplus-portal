@@ -17,6 +17,10 @@ to `release-todo.md`.
 **Goal:** an interface where users can perform the mapping — create an
 Octo+ file without knowing the French format.
 
+**Stack (decided 2026-07-16):** Vite + React Router (SPA) + TypeScript,
+shadcn/ui + Tailwind. No data-caching layer — the app is interactive;
+at most cache some config.
+
 Example flow:
 
 1. User picks the file he wants to create. Source: the Octo+ repositories

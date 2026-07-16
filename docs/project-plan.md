@@ -179,7 +179,7 @@ Per-customer Octo+ SFTP instance
 **Relay design notes:**
 - Stateless worker: pulls jobs from the queue, streams the artifact from object storage, uploads via SFTP — no files at rest on the VM beyond the stream
 - **Only** its egress IP needs whitelisting; the main app can live anywhere in our cloud
-- Uploads are **atomic**: write `name.tmp`, rename to final prefixed name
+- Uploads are **atomic**: Octo+ consumes files as soon as they appear (even mid-upload), so write as `uploading_<final name>`, rename to the final prefixed name when the transfer completes
 - Retries with backoff; job status reported back (queued → uploading → sent → failed)
 - Single VM is fine for v1 volumes; it's stateless, so a second one later is trivial
 - Secure the app→relay channel (private network / VPN / mTLS); relay holds no credentials at rest — it fetches SFTP secrets per-job from the secrets manager

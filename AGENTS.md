@@ -53,7 +53,8 @@ Schema Registry → Data Entry UI → Validation/Transformation → Storage → 
 - **Storage**: S3-compatible object storage — the generated artifact and the
   structured source data (so it can be edited and regenerated).
 - **Delivery**: queue → France relay → per-customer Octo+ SFTP, atomic
-  upload (write `.tmp`, rename), retries, status tracking.
+  upload (write `uploading_<name>`, rename — Octo+ consumes files even
+  mid-upload), retries, status tracking.
 - **Webhook receiver** (future, build the endpoint now, dormant until Octo+
   ships it): ingestion status callback.
 

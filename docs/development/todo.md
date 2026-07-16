@@ -40,6 +40,23 @@ Tasks:
       markers, enum dropdowns, defaults pre-filled (per the reference docs)
 - [ ] Show the resulting Octo+ row(s)/CSV so the EN→FR mapping is visible
 
+## Backend
+
+- [ ] Document the existing Go ETL project (`etl-utility`) **in that repo**,
+      then reference it from this project's docs. It already implements the
+      Octo+ file transformation we need to extract functionality from.
+      - Repo: <https://github.com/moxalibudbud/etl-utility/tree/go>
+        (local clone: `/Users/dev/dev/etl-utility`, branch `go`)
+      - Everything funnels through one JSON-serializable `etl.Run(Config)` —
+        designed to be driven from CLI, queue worker, cloud function, or
+        in-process
+      - `skuserial` implements the `[sku][serial]` bracket codec (the
+        serialized-product convention in `docs/reference/product-sku.md`)
+      - Repo self-documents in `ETL_CODE_REVIEW_AND_GO_DESIGN.md` and
+        `MIGRATION_PROCESS.md`
+      - Note: this puts **Go** in the backend stack conversation alongside
+        Node/NestJS and Python/FastAPI (Phase 0 decision above)
+
 ## Future improvements
 
 - [ ] Entra ID app registration (SSO)

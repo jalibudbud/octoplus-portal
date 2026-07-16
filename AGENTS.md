@@ -9,8 +9,9 @@ Octo+ Data Portal — an internal web app that lets the team generate valid Octo
 SFTP relay, to the correct per-customer Octo+ instance. It replaces today's
 manual process of hand-building CSVs against a mapping spreadsheet.
 
-Full plan: `docs/project-plan.md`. Treat that file as the source of truth if
-anything here goes stale; this file is a working summary of it.
+Full plan: `docs/project-plan.md`. It is the source of truth for product scope,
+architecture, and business decisions. `AGENTS.md` is the source of truth for
+coding-agent behavior and repository implementation conventions.
 
 ## Current state
 
@@ -19,9 +20,8 @@ application code, no chosen repo layout.
 
 - Frontend is decided: **Vite + React Router (SPA) + TypeScript, with
   shadcn/ui + Tailwind**. Plain SPA on purpose — interactive internal tool,
-  no SSR/SEO, no server data caching (at most some config caching). Don't
-  introduce Next.js/Remix or low-code builders (Retool was considered and
-  rejected).
+  no SSR/SEO, no server data caching. Detailed frontend implementation rules
+  are in `frontend/AGENTS.md`.
 - API stack is **not** decided: Node/NestJS vs Python/FastAPI, to be picked in
   Phase 0 by team skills. Don't assume one without checking
   `docs/project-plan.md` §6 and `docs/development/todo.md` first.
@@ -93,3 +93,24 @@ Delivery notice; SKUs + Store before Bulk printing.
 - `docs/project-plan.md` — full plan: decisions locked, scope, architecture,
   delivery phases, risks, open items.
 - `docs/development/todo.md` — dev task tracking (currently empty).
+
+## Repository layout and agent instructions
+
+This is a monorepo. The root `AGENTS.md` contains product-wide architecture,
+security constraints, integration rules, and shared engineering decisions.
+
+Each application or package may contain its own `AGENTS.md` with
+implementation-specific rules. When working inside a directory, read and apply:
+
+1. The root `AGENTS.md`.
+2. Every applicable nested `AGENTS.md` from the root to the target file.
+3. The nearest `AGENTS.md` as the authority for directory-specific conventions.
+
+Current application instructions:
+
+- `frontend/AGENTS.md` — Vite, React, TypeScript, React Router, shadcn/ui,
+  Tailwind, UI architecture, accessibility, and frontend quality checks.
+- Backend instructions will be added after the API stack is selected.
+
+Nested instructions may extend or specialize root instructions, but must not
+override product-wide security constraints or locked architecture decisions.

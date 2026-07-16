@@ -1,24 +1,25 @@
 import { Archive, Barcode, Building2, Folder, Package, Printer, Store, Truck } from 'lucide-react'
+import { Link } from 'react-router'
 import type { LucideIcon } from 'lucide-react'
-
-type Kind = 'master' | 'transactional'
+import type { RepoSlug, RepoKind } from '@/lib/schema'
 
 interface Repo {
   name: string
   domain: string
-  kind: Kind
+  kind: RepoKind
   icon: LucideIcon
+  slug: RepoSlug
 }
 
 const repos: Repo[] = [
-  { name: 'Category', domain: 'Product', kind: 'master', icon: Folder },
-  { name: 'SKU', domain: 'Product', kind: 'master', icon: Package },
-  { name: 'Barcode', domain: 'Product', kind: 'master', icon: Barcode },
-  { name: 'Suppliers', domain: 'Metadata', kind: 'master', icon: Building2 },
-  { name: 'Stores', domain: 'Metadata', kind: 'master', icon: Store },
-  { name: 'Stock on-hand', domain: 'Inventory', kind: 'master', icon: Archive },
-  { name: 'Delivery notice', domain: 'Shipping', kind: 'transactional', icon: Truck },
-  { name: 'Bulk printing', domain: 'Printing', kind: 'transactional', icon: Printer },
+  { name: 'Category',      domain: 'Product',   kind: 'master',       icon: Folder,   slug: 'category' },
+  { name: 'SKU',           domain: 'Product',   kind: 'master',       icon: Package,  slug: 'sku' },
+  { name: 'Barcode',       domain: 'Product',   kind: 'master',       icon: Barcode,  slug: 'barcode' },
+  { name: 'Suppliers',     domain: 'Metadata',  kind: 'master',       icon: Building2, slug: 'suppliers' },
+  { name: 'Stores',        domain: 'Metadata',  kind: 'master',       icon: Store,    slug: 'stores' },
+  { name: 'Stock on-hand', domain: 'Inventory', kind: 'master',       icon: Archive,  slug: 'stock' },
+  { name: 'Delivery notice', domain: 'Shipping', kind: 'transactional', icon: Truck,  slug: 'delivery-notice' },
+  { name: 'Bulk printing', domain: 'Printing',  kind: 'transactional', icon: Printer, slug: 'bulk-printing' },
 ]
 
 export default function Home() {
@@ -42,11 +43,11 @@ export default function Home() {
             Repositories
           </p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {repos.map(({ name, domain, kind, icon: Icon }) => (
-              <button
+            {repos.map(({ name, domain, kind, icon: Icon, slug }) => (
+              <Link
                 key={name}
-                type="button"
-                className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-left hover:bg-accent transition-colors cursor-default"
+                to={`/transform/${slug}`}
+                className="flex flex-col gap-3 border border-border bg-card p-4 text-left hover:bg-accent transition-colors"
               >
                 <Icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
                 <div className="space-y-0.5">
@@ -55,7 +56,7 @@ export default function Home() {
                 </div>
                 <span
                   className={[
-                    'self-start rounded text-[10px] font-medium px-1.5 py-0.5',
+                    'self-start text-[10px] font-medium px-1.5 py-0.5',
                     kind === 'master'
                       ? 'bg-muted text-muted-foreground'
                       : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
@@ -63,7 +64,7 @@ export default function Home() {
                 >
                   {kind}
                 </span>
-              </button>
+              </Link>
             ))}
           </div>
         </section>

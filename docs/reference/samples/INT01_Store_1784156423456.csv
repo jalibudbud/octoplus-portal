@@ -1,0 +1,10 @@
+TYPE_ATTRIBUT;CODE_ATTRIBUT;LIBELLE_ATTRIBUT;TYPE_ATTRIBUT_PARENT;CODE_ATTRIBUT_PARENT
+Store;IQ Fullfilment ;IQ Fullfilment ;;
+Store_level_2;iq-fullfilment-_L2;Storage 1 - IQ Fullfilment ;Store;IQ Fullfilment 
+Store_level_3;iq-fullfilment-_L3;Area 1 - IQ Fullfilment ;Store_level_2;iq-fullfilment-_L2
+Store;Main Warehouse;Main Warehouse;;
+Store_level_2;main-warehouse_L2;Storage 1 - Main Warehouse;Store;Main Warehouse
+Store_level_3;main-warehouse_L3;Area 1 - Main Warehouse;Store_level_2;main-warehouse_L2
+Store;Maurten-Laurent/Event;Maurten-Laurent/Event;;
+Store_level_2;maurten-laurentevent_L2;Storage 1 - Maurten-Laurent/Event;Store;Maurten-Laurent/Event
+Store_level_3;maurten-laurentevent_L3;Area 1 - Maurten-Laurent/Event;Store_level_2;maurten-laurentevent_L2

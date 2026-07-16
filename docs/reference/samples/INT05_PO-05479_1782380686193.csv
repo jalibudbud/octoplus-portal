@@ -1,0 +1,4 @@
+TYPE_DOCUMENT;LOC_DEP;LOC_DEST;N_COLIS;CODE_ARTICLE;QTE_STOCK;REF_EXTERNE
+print_query_warehouse;;;test2;[425384 - 002][PO-05479-1-1];1;test2
+print_query_warehouse;;;test;[7616185386230][PO-05479-1];1;test
+print_query_warehouse;;;test;[7616185386223][PO-05479-2];1;test

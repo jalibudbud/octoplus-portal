@@ -43,9 +43,12 @@ Schema Registry → Data Entry UI → Validation/Transformation → Storage → 
 ```
 
 - **Schema Registry**: each Octo+ repository (Category, SKU, Barcode,
-  Pricing, Suppliers, Stores, Stock, Delivery notice, Bulk print) described as
+  Suppliers, Stores, Stock, Delivery notice, Bulk print) described as
   declarative, versioned data — FR/EN column mapping, filename prefix,
-  dependencies. Not hardcoded per repository.
+  dependencies. Not hardcoded per repository. Formats are documented per
+  repository in `docs/reference/` against accepted sample files. (Pricing
+  has its own Octo+ "price list" repository but is deferred — v1 uses the
+  SKU file's `SELLING_PRICE`/`BUYING_PRICE`.)
 - **Data Entry UI**: dynamic forms rendered from schema, grid/spreadsheet
   entry, CSV import with column mapping.
 - **Validation/Transformation**: EN→FR field mapping, field/set/referential
@@ -64,8 +67,8 @@ change in the schema registry**, not a code release.
 
 Load-order dependencies are enforced by the app (declared in the registry,
 not hardcoded):
-`Category → SKU → Barcode (→ Pricing)`; SKU before Stock-on-hand; Supplier +
-SKUs before Delivery notice.
+`Category → SKU → Barcode`; SKU before Stock-on-hand; Supplier + SKUs before
+Delivery notice; SKUs + Store before Bulk printing.
 
 ## Things to watch out for when implementing
 

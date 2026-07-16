@@ -10,44 +10,44 @@ Accepted sample (in `samples/`): `I_SKU_VIAWORKFLOW_1782212471299.csv`
 
 ## Fields
 
-32 columns, in file order. Required-ness is **not yet confirmed** — the
-"In sample" column shows which columns were populated in the accepted sample
-(419/419 rows or 0).
+32 columns, in file order. Required: only `TYPE_MOUVEMENT`, `CODE_ARTICLE`
+and `MAIN_EAN`. The "In sample" column shows which columns were populated in
+the accepted sample (419/419 rows or 0).
 
-| # | OCTO+ column name | Description | Value | Type | In sample |
-|---|---|---|---|---|---|
-| 1 | `TYPE_MOUVEMENT` | action to perform when imported to Octo+ | `enums.TYPE_MOUVEMENT` | string | all |
-| 2 | `CODE_ARTICLE` | SKU code | | string | all |
-| 3 | `MAIN_EAN` | SKU barcode | | string | all |
-| 4 | `CODE_PRODUCT` | Product code | | string | all |
-| 5 | `SHORT_LABEL` | Short description (limited space on screen) | | string | all |
-| 6 | `LONG_LABEL` | Full description | | string | empty |
-| 7 | `CODE_SEASON` | Collection / season code | | string | empty |
-| 8 | `CODE_SUPPLIER` | Supplier code | → metadata `FOURNISSEUR` | string | empty |
-| 9 | `CODE_FAMILY` | Product category code | → metadata `FAMILLE` | string | all |
-| 10 | `CODE_NGP` | *(unknown)* | | string | empty |
-| 11 | `CODE_COLOR` | Color code (Blue, Red, etc…) | → metadata `COULEUR` | string | empty |
-| 12 | `CODE_SIZE` | Size code (S, M, L, etc…) | → metadata `TAILLE` | string | empty |
-| 13 | `PRIMARY_TYPE_TAG` | Main tag (main RFID tag type) | | string | all (`Multi`) |
-| 14 | `SECONDARY_TYPE_TAG` | Secondary tag (swing ticket, sticker, etc…) | | string | all (`Multi`) |
-| 15 | `SELLING_PRICE` | | | decimal | all |
-| 16 | `BUYING_PRICE` | | | decimal | all |
-| 17 | `URL_PICTURE` | Link to the picture of the SKU | | string | empty |
-| 18 | `TRACEABILITY_MODE` | `0` or `SKU` = manage at the barcode level | | string | empty |
-| 19 | `SUPPLIER_REF` | | | string | empty |
-| 20 | `END_PRODUCT` | | | string | empty |
-| 21 | `QUANTITY` | | | string | empty |
-| 22 | `UNIT` | | | string | empty |
-| 23 | `FIDELITY_PRICE` | | | string | empty |
-| 24 | `USERFIELD_1` | free user field | | string | empty |
-| 25 | `USERFIELD_2` | free user field | | string | empty |
-| 26 | `USERFIELD_3` | free user field | | string | empty |
-| 27 | `USERFIELD_4` | free user field | | string | empty |
-| 28 | `USERFIELD_5` | free user field | | string | all |
-| 29 | `CODE_BRAND` | | | string | empty |
-| 30 | `PRICE_COMPARISON_UNIT` | | | string | empty |
-| 31 | `PRICE_COMPARISON_DIVIDER` | | | string | empty |
-| 32 | `RANK` | | | string | empty |
+| # | OCTO+ column name | Description | Value | Type | Required | In sample |
+|---|---|---|---|---|---|---|
+| 1 | `TYPE_MOUVEMENT` | action to perform when imported to Octo+ | `enums.TYPE_MOUVEMENT` | string | yes | all |
+| 2 | `CODE_ARTICLE` | SKU code (free text) | | string | yes | all |
+| 3 | `MAIN_EAN` | SKU barcode — unique; a `CODE_PRODUCT` can have multiple barcodes | | string | yes | all |
+| 4 | `CODE_PRODUCT` | Product code | | string | no | all |
+| 5 | `SHORT_LABEL` | Short description (limited space on screen) | | string | no | all |
+| 6 | `LONG_LABEL` | Full description | | string | no | empty |
+| 7 | `CODE_SEASON` | Collection / season code | | string | no | empty |
+| 8 | `CODE_SUPPLIER` | Supplier code | → metadata `FOURNISSEUR` | string | no | empty |
+| 9 | `CODE_FAMILY` | Product category code | → metadata `FAMILLE` | string | no | all |
+| 10 | `CODE_NGP` | *(unknown)* | | string | no | empty |
+| 11 | `CODE_COLOR` | Color code (Blue, Red, etc…) | → metadata `COULEUR` | string | no | empty |
+| 12 | `CODE_SIZE` | Size code (S, M, L, etc…) | → metadata `TAILLE` | string | no | empty |
+| 13 | `PRIMARY_TYPE_TAG` | Main tag (main RFID tag type) | | string | no | all (`Multi`) |
+| 14 | `SECONDARY_TYPE_TAG` | Secondary tag (swing ticket, sticker, etc…) | | string | no | all (`Multi`) |
+| 15 | `SELLING_PRICE` | | | decimal | no | all |
+| 16 | `BUYING_PRICE` | | | decimal | no | all |
+| 17 | `URL_PICTURE` | Link to the picture of the SKU | | string | no | empty |
+| 18 | `TRACEABILITY_MODE` | `0` or `SKU` = manage at the barcode level | | string | no | empty |
+| 19 | `SUPPLIER_REF` | | | string | no | empty |
+| 20 | `END_PRODUCT` | | | string | no | empty |
+| 21 | `QUANTITY` | | | string | no | empty |
+| 22 | `UNIT` | | | string | no | empty |
+| 23 | `FIDELITY_PRICE` | | | string | no | empty |
+| 24 | `USERFIELD_1` | free user field | | string | no | empty |
+| 25 | `USERFIELD_2` | free user field | | string | no | empty |
+| 26 | `USERFIELD_3` | free user field | | string | no | empty |
+| 27 | `USERFIELD_4` | free user field | | string | no | empty |
+| 28 | `USERFIELD_5` | free user field | | string | no | all |
+| 29 | `CODE_BRAND` | | | string | no | empty |
+| 30 | `PRICE_COMPARISON_UNIT` | | | string | no | empty |
+| 31 | `PRICE_COMPARISON_DIVIDER` | | | string | no | empty |
+| 32 | `RANK` | | | string | no | empty |
 
 Columns marked `→ metadata …` are referential: they must match a
 `CODE_ATTRIBUT` of that `TYPE_ATTRIBUT` already delivered to the same
@@ -65,14 +65,12 @@ instance via the `INT01` metadata format (load order: metadata before SKU).
 
 ## Observations from the accepted sample
 
-Patterns that hold on every row of the sample — customer convention vs
-Octo+ rule not yet confirmed:
-
-- `CODE_ARTICLE` is a composite: `[CODE_PRODUCT][<ref>]`, where `<ref>` is
-  also written to `USERFIELD_5` (e.g.
-  `[7615523507993][SJM04AA0M23090124A]`).
-- `MAIN_EAN` is unique across all rows (one row per physical barcode);
-  `CODE_PRODUCT` repeats across rows of the same product.
+- `CODE_ARTICLE` is free text as far as Octo+ is concerned. The
+  `[CODE_PRODUCT][<ref>]` composite seen in the sample (with `<ref>`
+  duplicated into `USERFIELD_5`) is **our own convention** for handling
+  serialized products — an option, not a rule.
+- `MAIN_EAN` is unique across all rows: one row per physical barcode, and a
+  `CODE_PRODUCT` can have multiple barcodes.
 - Prices use **dot** as decimal separator, 2–4 decimal places seen
   (`1237.63`, `1497.9043`). Comma-decimal behavior unknown — emit dot.
 - `CODE_FAMILY` values (`Mountain Bike`) are `FAMILLE` codes, confirming the
@@ -92,16 +90,11 @@ Octo+ rule not yet confirmed:
 
 ## Open questions
 
-1. Which columns does Octo+ actually require? (Sample suggests at minimum
-   `TYPE_MOUVEMENT`, `CODE_ARTICLE`, `MAIN_EAN`, `CODE_PRODUCT`,
-   `SHORT_LABEL`, `CODE_FAMILY`, tag types and prices — unconfirmed.)
-2. Allowed values for `PRIMARY_TYPE_TAG` / `SECONDARY_TYPE_TAG` (only
+1. Allowed values for `PRIMARY_TYPE_TAG` / `SECONDARY_TYPE_TAG` (only
    `Multi` seen).
-3. Semantics of `CODE_NGP`, `END_PRODUCT`, `QUANTITY`/`UNIT`,
+2. Semantics of `CODE_NGP`, `END_PRODUCT`, `QUANTITY`/`UNIT`,
    `PRICE_COMPARISON_*`, `RANK`.
-4. Is the `[CODE_PRODUCT][ref]` shape of `CODE_ARTICLE` an Octo+ rule or a
-   customer convention?
-5. `TRACEABILITY_MODE` exact accepted values (`0` / `SKU`?) and default when
+3. `TRACEABILITY_MODE` exact accepted values (`0` / `SKU`?) and default when
    empty.
 
 ## SFTP delivery

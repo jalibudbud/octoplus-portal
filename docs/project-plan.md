@@ -60,30 +60,35 @@ An **internal** web application that lets our team produce **valid Octo+ CSV fil
 
 ## 4. V1 scope — repositories
 
-Nine repositories across five domains:
+Eight repositories across five domains (formats documented in
+`docs/reference/`):
 
-| Domain | Repository | Prefix (example) | Notes |
+| Domain | Repository | Prefix | Notes |
 |---|---|---|---|
-| Product | Category | TBD | First in load order |
+| Product | Category | `INT01` | First in load order — shared metadata format |
 | Product | SKU | `I_SKU` | Depends on Category |
 | Product | Barcode | `I_CAB` | Depends on SKU |
-| Product | Pricing | TBD | |
-| Metadata | Suppliers | TBD | Referenced by delivery notices |
-| Metadata | Stores | TBD | |
-| Inventory | Stock on-hand | TBD | Depends on SKU |
-| Shipping | Supplier delivery notice | TBD | **Transactional** — references supplier + SKUs + qty |
-| Printing | Bulk printing | TBD | References existing SKUs/barcodes |
+| Metadata | Suppliers | `INT01` | Referenced by delivery notices — shared metadata format |
+| Metadata | Stores | `INT01` | Shared metadata format (3 levels), incl. color/size |
+| Inventory | Stock on-hand | `INT04` | Depends on SKU |
+| Shipping | Supplier delivery notice | `I_DSU` | **Transactional** — references supplier + SKUs + qty |
+| Printing | Bulk printing | `INT05` | References existing SKUs + store |
+
+> **Pricing:** Octo+ has a separate "price list" repository, **deferred for
+> now** — v1 uses the RSP/COST prices in the SKU file
+> (`SELLING_PRICE`/`BUYING_PRICE`) as the default.
 
 Two repository *kinds* with different UX needs:
-- **Master data** (category, SKU, barcode, pricing, suppliers, stores): create/maintain reference data; grid entry, CSV import, cloning between customers.
+- **Master data** (category, SKU, barcode, suppliers, stores): create/maintain reference data; grid entry, CSV import, cloning between customers.
 - **Transactional** (delivery notice, bulk print, stock update): reference master data that must already exist; validation should check references against the app's stored datasets.
 
 ### Load-order dependencies (enforced by the app)
 
 ```
-Product chain:    Category → SKU → Barcode   (→ Pricing)
+Product chain:    Category → SKU → Barcode
 Inventory:        SKU must exist before Stock on-hand
 Shipping:         Supplier + SKUs must exist before Delivery notice
+Printing:         SKUs + Store must exist before Bulk printing
 ```
 
 Dependencies are declared **in the schema registry** per repository, not hardcoded. The app:
@@ -300,11 +305,10 @@ Product Category end-to-end: form → validate → transform → generate → st
 
 ## 10. Immediate next actions
 
-- [ ] Share mapping spreadsheet + full prefix lookup table + accepted sample files
-- [ ] Request Octo+ test SFTP instance access
-- [ ] Ask Octo+: webhook schema/ETA + whitelisting model (global vs per-instance)
-- [ ] Provision France relay VM; submit its IP for whitelisting
-- [ ] Encoding round-trip test
-- [ ] Team stack decision (Node/NestJS vs Python/FastAPI)
-- [ ] Entra ID app registration
-- [ ] Phase 0 kickoff
+- [done] Share mapping spreadsheet + full prefix lookup table + accepted sample files
+- [done] Request Octo+ test SFTP instance access
+- [no need we handle this internally] Ask Octo+: webhook schema/ETA + whitelisting model (global vs per-instance)
+- [add in todo] Provision France relay VM; submit its IP for whitelisting
+- [add in todo] Encoding round-trip test
+- [add in todo] Team stack decision (Node/NestJS vs Python/FastAPI)
+- [add in future improvement] Entra ID app registration

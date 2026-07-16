@@ -17,9 +17,10 @@ to `release-todo.md`.
 **Goal:** an interface where users can perform the mapping — create an
 Octo+ file without knowing the French format.
 
-**Stack (decided 2026-07-16):** Vite + React Router (SPA) + TypeScript,
-shadcn/ui + Tailwind. No data-caching layer — the app is interactive;
-at most cache some config.
+**Stack (scaffolded 2026-07-16):** `./frontend` — pnpm workspace, Vite 8,
+React 19, React Router 8, TypeScript 6, shadcn/ui (Nova preset), Tailwind
+CSS 4. Run: `cd frontend && pnpm dev`. No data-caching layer — the app is
+interactive; at most cache some config.
 
 Example flow:
 

@@ -27,7 +27,8 @@ export default function TransformFile() {
   // Upload / mapping state
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [sourceColumns, setSourceColumns] = useState<string[]>([])
-  const [_sourceDelimiter, setSourceDelimiter] = useState<Delimiter>(';')
+  const [sourceDelimiter, setSourceDelimiter] = useState<Delimiter>(';')
+  const [sourceHasHeader, setSourceHasHeader] = useState(true)
   const [mapping, setMapping] = useState<ColumnMapping>({})
   const [mappingConfirmed, setMappingConfirmed] = useState(false)
   const [previewRows, setPreviewRows] = useState<string[][]>([])
@@ -62,10 +63,11 @@ export default function TransformFile() {
     setManualRows((prev) => prev.filter((_, i) => i !== index))
   }
 
-  function handleFileSelected(file: File, columns: string[], delimiter: Delimiter) {
+  function handleFileSelected(file: File, columns: string[], delimiter: Delimiter, hasHeader: boolean) {
     setUploadedFile(file)
     setSourceColumns(columns)
     setSourceDelimiter(delimiter)
+    setSourceHasHeader(hasHeader)
     setMapping({})
     setMappingConfirmed(false)
     setPreviewRows([])
@@ -82,7 +84,7 @@ export default function TransformFile() {
     setPreviewRows([])
 
     const rows: string[][] = []
-    for await (const row of streamRows(uploadedFile, sourceColumns, schema.fields, mapping, { maxRows: 5 })) {
+    for await (const row of streamRows(uploadedFile, sourceColumns, schema.fields, mapping, { maxRows: 5, delimiter: sourceDelimiter, hasHeader: sourceHasHeader })) {
       rows.push(row)
     }
     setPreviewRows(rows)
@@ -99,7 +101,7 @@ export default function TransformFile() {
     if (!uploadedFile) return
     setIsDownloading(true)
     const allRows: string[][] = []
-    for await (const row of streamRows(uploadedFile, sourceColumns, schema.fields, mapping)) {
+    for await (const row of streamRows(uploadedFile, sourceColumns, schema.fields, mapping, { delimiter: sourceDelimiter, hasHeader: sourceHasHeader })) {
       allRows.push(row)
     }
     const csv = serializeCSV(schema.fields, allRows)

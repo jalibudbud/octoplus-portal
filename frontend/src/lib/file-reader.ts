@@ -1,6 +1,6 @@
 import type { FieldDef } from './schema/types'
 
-export type Delimiter = ';' | ','
+export type Delimiter = string
 
 export type ColumnMapping = Record<string, string | null>
 
@@ -15,6 +15,8 @@ export function parseCSVLine(line: string, delimiter: Delimiter): string[] {
 
 export async function readHeader(
   file: File,
+  delimiterOverride?: Delimiter,
+  hasHeader = true,
 ): Promise<{ columns: string[]; delimiter: Delimiter }> {
   const slice = file.slice(0, 2048)
   const text = await slice.text()
@@ -22,8 +24,11 @@ export async function readHeader(
   if (firstLine === undefined || firstLine.trim() === '') {
     throw new Error('Could not read header row — file appears to be empty.')
   }
-  const delimiter = detectDelimiter(text)
-  const columns = parseCSVLine(firstLine, delimiter).map((c) => c.trim())
+  const delimiter = delimiterOverride || detectDelimiter(text)
+  const firstRowCells = parseCSVLine(firstLine, delimiter)
+  const columns = hasHeader
+    ? firstRowCells.map((c) => c.trim())
+    : firstRowCells.map((_, i) => `Column ${i + 1}`)
   return { columns, delimiter }
 }
 
@@ -32,9 +37,9 @@ export async function* streamRows(
   sourceColumns: string[],
   targetFields: FieldDef[],
   mapping: ColumnMapping,
-  options?: { maxRows?: number },
+  options?: { maxRows?: number; delimiter?: Delimiter; hasHeader?: boolean },
 ): AsyncGenerator<string[]> {
-  const { maxRows } = options ?? {}
+  const { maxRows, delimiter, hasHeader = true } = options ?? {}
 
   // Build index: for each target field, the source column index (or -1 = skip)
   const sourceIndexes: number[] = targetFields.map((field) => {
@@ -63,8 +68,7 @@ export async function* streamRows(
     buffer = lines.pop() ?? ''
 
     for (const line of lines) {
-      if (lineIndex === 0) {
-        // skip header row
+      if (lineIndex === 0 && hasHeader) {
         lineIndex++
         continue
       }
@@ -75,9 +79,7 @@ export async function* streamRows(
       if (maxRows !== undefined && rowCount >= maxRows) break
 
       const sourceCells = line.split(
-        // detect delimiter from first line — we already know it, pass it via closure
-        // We re-split here; use the same delimiter logic
-        sourceColumns.length > 1 && line.includes(';') ? ';' : ',',
+        delimiter ?? (line.includes(';') ? ';' : ','),
       )
 
       const mappedRow: string[] = sourceIndexes.map((idx, _i) => {
@@ -98,7 +100,7 @@ export async function* streamRows(
   // Process any remaining buffer content after stream ends
   if (buffer.trim() !== '') {
     if (lineIndex > 0 && (maxRows === undefined || rowCount < maxRows)) {
-      const sourceCells = buffer.split(buffer.includes(';') ? ';' : ',')
+      const sourceCells = buffer.split(delimiter ?? (buffer.includes(';') ? ';' : ','))
       const mappedRow: string[] = sourceIndexes.map((idx, _i) => {
         if (idx === -1) {
           const field = targetFields[_i]

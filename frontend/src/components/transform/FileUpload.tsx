@@ -1,10 +1,19 @@
 import { useRef, useState } from 'react'
 import { Upload } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { readHeader } from '@/lib/file-reader'
 import type { Delimiter } from '@/lib/file-reader'
 
 interface FileUploadProps {
-  onFileSelected: (file: File, columns: string[], delimiter: Delimiter) => void
+  onFileSelected: (file: File, columns: string[], delimiter: Delimiter, hasHeader: boolean) => void
+}
+
+function delimiterLabel(delimiter: Delimiter): string {
+  if (delimiter === ';') return 'semicolon (;)'
+  if (delimiter === ',') return 'comma (,)'
+  if (delimiter === '\t') return 'tab'
+  return `"${delimiter}"`
 }
 
 export function FileUpload({ onFileSelected }: FileUploadProps) {
@@ -12,15 +21,19 @@ export function FileUpload({ onFileSelected }: FileUploadProps) {
   const [status, setStatus] = useState<'idle' | 'reading' | 'done' | 'error'>('idle')
   const [info, setInfo] = useState<{ name: string; columns: number; delimiter: string } | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [separator, setSeparator] = useState('')
+  const [hasHeader, setHasHeader] = useState(true)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
-  async function handleFile(file: File) {
+  async function handleFile(file: File, separatorOverride = separator, hasHeaderOverride = hasHeader) {
+    setSelectedFile(file)
     setStatus('reading')
     setErrorMsg(null)
     try {
-      const { columns, delimiter } = await readHeader(file)
+      const { columns, delimiter } = await readHeader(file, separatorOverride || undefined, hasHeaderOverride)
       setInfo({ name: file.name, columns: columns.length, delimiter })
       setStatus('done')
-      onFileSelected(file, columns, delimiter)
+      onFileSelected(file, columns, delimiter, hasHeaderOverride)
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Failed to read file.')
       setStatus('error')
@@ -36,6 +49,18 @@ export function FileUpload({ onFileSelected }: FileUploadProps) {
     e.preventDefault()
     const file = e.dataTransfer.files[0]
     if (file) handleFile(file)
+  }
+
+  function handleSeparatorChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value
+    setSeparator(value)
+    if (selectedFile) handleFile(selectedFile, value)
+  }
+
+  function handleHasHeaderChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.checked
+    setHasHeader(value)
+    if (selectedFile) handleFile(selectedFile, separator, value)
   }
 
   return (
@@ -65,6 +90,33 @@ export function FileUpload({ onFileSelected }: FileUploadProps) {
         />
       </div>
 
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <Label htmlFor="separator" className="text-muted-foreground">
+            Separator
+          </Label>
+          <Input
+            id="separator"
+            value={separator}
+            onChange={handleSeparatorChange}
+            maxLength={1}
+            placeholder="auto"
+            className="w-16 font-mono text-center"
+          />
+        </div>
+
+        <label htmlFor="has-header" className="flex items-center gap-2 cursor-pointer select-none">
+          <input
+            id="has-header"
+            type="checkbox"
+            checked={hasHeader}
+            onChange={handleHasHeaderChange}
+            className="h-3.5 w-3.5 accent-foreground"
+          />
+          <span className="text-xs text-muted-foreground">File has header row</span>
+        </label>
+      </div>
+
       {status === 'reading' && (
         <p className="text-xs text-muted-foreground">Reading header…</p>
       )}
@@ -74,7 +126,7 @@ export function FileUpload({ onFileSelected }: FileUploadProps) {
           <p className="text-xs font-medium">{info.name}</p>
           <p className="text-[10px] text-muted-foreground">
             {info.columns} columns detected · delimiter:{' '}
-            <span className="font-mono">{info.delimiter === ';' ? 'semicolon (;)' : 'comma (,)'}</span>
+            <span className="font-mono">{delimiterLabel(info.delimiter)}</span>
           </p>
         </div>
       )}

@@ -29,31 +29,29 @@ Example flow:
 2. POC-level functionality only: a form where the user populates the
    values (grid/import/delivery come later).
 
-Tasks:
+Done so far is in `release-todo.md` (schema-driven form, FR CSV preview,
+CSV import core flow, portal API scaffold). Remaining to close Phase 1:
 
-- [ ] Repository picker — list entries from `docs/reference/` with
-      metadata split per item (Category, Color, Size, Supplier, Store,
-      SKU, Barcode, Stock on hand, Bulk printing, Delivery notice)
-- [ ] Schema-driven form per repository: English labels/help text, required
-      markers, enum dropdowns, defaults pre-filled (per the reference docs)
-- [ ] Show the resulting Octo+ row(s)/CSV so the EN→FR mapping is visible
-- [ ] CSV import with column mapping (started ahead of plan, 2026-07-17):
-      upload a source file and map its columns to schema fields
-      (`frontend/src/components/transform/ColumnMapper.tsx`). Enum fields
-      don't map to a source column — the user picks one of the field's enum
-      values, applied as a constant to every output row. Remaining:
-      field/set validation of mapped values, delimiter/decimal edge cases
+- [ ] Repository picker — add the missing INT01 split entries: **Color**
+      and **Size**. The registry factory already supports them
+      (`makeInt01Fields({ lockedType: 'COULEUR' | 'TAILLE' })` in
+      `frontend/src/lib/schema/int01.ts`); needs two entries + slugs in
+      `frontend/src/lib/schema/repos.ts` and two cards in
+      `frontend/src/pages/Home.tsx`
+- [ ] Validation of entered/imported data (plan §5.3): field level
+      (required, type, length, enum) and set level (duplicate keys within
+      a file) — applies to both manual rows and mapped CSV imports
+- [ ] CSV escaping & edge cases (plan §5.3) — **silent-corruption risk**:
+      `parseCSVLine` is a naive `split(delimiter)` and `serializeCSV`
+      doesn't quote/escape `;` inside values
+      (`frontend/src/lib/file-reader.ts`); also decimal separator,
+      date format, boolean encoding
 
 ### Backend
 
 Stack decided 2026-07-17: **Node/NestJS** portal API (see
 `docs/project-plan.md` §6 and `release-todo.md`).
 
-- [ ] Portal API scaffold (`backend/`, started 2026-07-17): NestJS modular
-      monolith. This iteration: `StorageModule` (provider interface —
-      S3 via SDK, local disk for dev; Azure Blob slot later) +
-      `FilesModule` (`POST /api/files` multipart → storage). Webapp gets
-      an "Upload to portal" action beside Download. No auth, no DB yet
 - [ ] SFTP instance config CRUD (customer+instance object, plan §5.5) —
       next backend task; credentials go to a secrets manager, never DB
 - [ ] Delivery queue (BullMQ) + France relay worker (NestJS) — later;
@@ -70,8 +68,8 @@ Stack decided 2026-07-17: **Node/NestJS** portal API (see
         serialized-product convention in `docs/reference/product-sku.md`)
       - Repo self-documents in `ETL_CODE_REVIEW_AND_GO_DESIGN.md` and
         `MIGRATION_PROCESS.md`
-      - Note: this puts **Go** in the backend stack conversation alongside
-        Node/NestJS and Python/FastAPI (Phase 0 decision above)
+      - Note: portal API stack is decided (NestJS); Go remains the
+        candidate for transform compute (e.g. Lambda) per plan §6
 
 ## Future improvements
 

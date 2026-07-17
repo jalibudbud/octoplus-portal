@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react'
 import { useParams, useNavigate, Link } from 'react-router'
-import { ArrowLeft, Download } from 'lucide-react'
+import { ArrowLeft, Download, Upload } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { getRepoSchema } from '@/lib/schema'
 import { streamRows, serializeCSV } from '@/lib/file-reader'
 import type { ColumnMapping, Delimiter } from '@/lib/file-reader'
+import { uploadGeneratedCsv } from '@/lib/api'
 import { SchemaViewer } from '@/components/transform/SchemaViewer'
 import { ManualForm } from '@/components/transform/ManualForm'
 import { RowsTable } from '@/components/transform/RowsTable'
@@ -36,6 +37,10 @@ export default function TransformFile() {
 
   // Download state
   const [isDownloading, setIsDownloading] = useState(false)
+
+  // Portal upload state
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadMessage, setUploadMessage] = useState<{ ok: boolean; text: string } | null>(null)
 
   if (!schema) {
     navigate('/', { replace: true })
@@ -102,16 +107,37 @@ export default function TransformFile() {
     triggerDownload(csv)
   }
 
+  async function buildCsvFromUploadedFile(): Promise<string> {
+    const allRows: string[][] = []
+    for await (const row of streamRows(uploadedFile!, sourceColumns, schema.fields, mapping, { delimiter: sourceDelimiter, hasHeader: sourceHasHeader })) {
+      allRows.push(row)
+    }
+    return serializeCSV(schema.fields, allRows)
+  }
+
   async function handleDownloadUpload() {
     if (!uploadedFile) return
     setIsDownloading(true)
-    const allRows: string[][] = []
-    for await (const row of streamRows(uploadedFile, sourceColumns, schema.fields, mapping, { delimiter: sourceDelimiter, hasHeader: sourceHasHeader })) {
-      allRows.push(row)
-    }
-    const csv = serializeCSV(schema.fields, allRows)
-    triggerDownload(csv)
+    triggerDownload(await buildCsvFromUploadedFile())
     setIsDownloading(false)
+  }
+
+  async function handleUploadToPortal(source: 'manual' | 'upload') {
+    if (source === 'upload' && !uploadedFile) return
+    if (source === 'manual' && manualRows.length === 0) return
+    setIsUploading(true)
+    setUploadMessage(null)
+    try {
+      const csv =
+        source === 'upload'
+          ? await buildCsvFromUploadedFile()
+          : serializeCSV(schema.fields, manualRows)
+      const result = await uploadGeneratedCsv(csv, schema.slug, `${schema.filePrefix}_export.csv`)
+      setUploadMessage({ ok: true, text: `Uploaded to portal: ${result.key}` })
+    } catch (err) {
+      setUploadMessage({ ok: false, text: err instanceof Error ? err.message : 'Upload failed' })
+    }
+    setIsUploading(false)
   }
 
   function triggerDownload(csv: string) {
@@ -204,14 +230,32 @@ export default function TransformFile() {
                 )}
 
                 {mappingConfirmed && !isStreaming && (
-                  <Button
-                    onClick={handleDownloadUpload}
-                    disabled={isDownloading}
-                    className="w-full flex items-center gap-2"
-                  >
-                    <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    {isDownloading ? 'Generating…' : 'Download CSV'}
-                  </Button>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleDownloadUpload}
+                        disabled={isDownloading}
+                        className="flex-1 flex items-center gap-2"
+                      >
+                        <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
+                        {isDownloading ? 'Generating…' : 'Download CSV'}
+                      </Button>
+                      <Button
+                        onClick={() => handleUploadToPortal('upload')}
+                        disabled={isUploading}
+                        variant="outline"
+                        className="flex-1 flex items-center gap-2"
+                      >
+                        <Upload className="h-3.5 w-3.5" strokeWidth={1.5} />
+                        {isUploading ? 'Uploading…' : 'Upload to portal'}
+                      </Button>
+                    </div>
+                    {uploadMessage && (
+                      <p className={`text-[10px] ${uploadMessage.ok ? 'text-muted-foreground' : 'text-destructive'}`}>
+                        {uploadMessage.text}
+                      </p>
+                    )}
+                  </div>
                 )}
               </TabsContent>
             </Tabs>
@@ -224,13 +268,29 @@ export default function TransformFile() {
                   rows={manualRows}
                   onDeleteRow={handleDeleteRow}
                 />
-                <Button
-                  onClick={handleDownloadManual}
-                  className="w-full flex items-center gap-2"
-                >
-                  <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
-                  Download CSV ({manualRows.length} row{manualRows.length !== 1 ? 's' : ''})
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleDownloadManual}
+                    className="flex-1 flex items-center gap-2"
+                  >
+                    <Download className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    Download CSV ({manualRows.length} row{manualRows.length !== 1 ? 's' : ''})
+                  </Button>
+                  <Button
+                    onClick={() => handleUploadToPortal('manual')}
+                    disabled={isUploading}
+                    variant="outline"
+                    className="flex-1 flex items-center gap-2"
+                  >
+                    <Upload className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    {isUploading ? 'Uploading…' : 'Upload to portal'}
+                  </Button>
+                </div>
+                {uploadMessage && (
+                  <p className={`text-[10px] ${uploadMessage.ok ? 'text-muted-foreground' : 'text-destructive'}`}>
+                    {uploadMessage.text}
+                  </p>
+                )}
               </div>
             )}
           </div>

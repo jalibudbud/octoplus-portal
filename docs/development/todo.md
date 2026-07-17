@@ -10,7 +10,6 @@ to `release-todo.md`.
       UTF-8 bytes already accepted in a real file (`Kärcher FZE`, see
       `docs/reference/metadata.md`), but label display inside Octo+ is
       still unverified
-- [ ] Team stack decision (Node/NestJS vs Python/FastAPI)
 
 ## Phase 1 — Frontend POC (started 2026-07-16)
 
@@ -49,6 +48,18 @@ Tasks:
 
 ## Backend
 
+Stack decided 2026-07-17: **Node/NestJS** portal API (see
+`docs/project-plan.md` §6 and `release-todo.md`).
+
+- [ ] Portal API scaffold (`backend/`, started 2026-07-17): NestJS modular
+      monolith. This iteration: `StorageModule` (provider interface —
+      S3 via SDK, local disk for dev; Azure Blob slot later) +
+      `FilesModule` (`POST /api/files` multipart → storage). Webapp gets
+      an "Upload to portal" action beside Download. No auth, no DB yet
+- [ ] SFTP instance config CRUD (customer+instance object, plan §5.5) —
+      next backend task; credentials go to a secrets manager, never DB
+- [ ] Delivery queue (BullMQ) + France relay worker (NestJS) — later;
+      relay is the second deployable
 - [ ] Document the existing Go ETL project (`etl-utility`) **in that repo**,
       then reference it from this project's docs. It already implements the
       Octo+ file transformation we need to extract functionality from.

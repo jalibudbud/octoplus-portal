@@ -226,7 +226,7 @@ Octo+ is developing a webhook that posts ingestion events to a given URL. Today,
 | Layer | Choice | Rationale |
 |---|---|---|
 | Frontend | **Vite + React Router (SPA)** + TypeScript, shadcn/ui + Tailwind | Decided 2026-07-16. Pure interactive internal app behind SSO — no SEO/SSR need, no server data caching (only some config caching); static bundle deploys anywhere; keeps frontend independent of the Node-vs-Python API decision. Next.js/Remix server layers add no value here; Retool rejected (low-code lock-in, weak fit for schema-driven forms/CSV mapping, and this portal is the long-term product) |
-| API | Node/NestJS *or* Python/FastAPI | Decide in Phase 0 by team skills (2–3 devs — pick the stack the team is fastest in) |
+| API | **Node/NestJS** | Decided 2026-07-17 — team skills: we ship production NestJS + BullMQ + blob storage today. Portal API is a modular monolith (storage / files / sftp-config / delivery modules) whose boundaries map to future services; the France relay worker (NestJS) is the second deployable. Upload path is API→S3 direct via SDK — **no Lambda hop** (Lambda buffers sync payloads, 6 MB cap, can't accept request streams). Go stays a candidate for transform compute later (`etl-utility`'s `etl.Run(Config)` runs in a cloud function) |
 | Database | PostgreSQL | Schemas, datasets, customers, jobs, audit |
 | Object storage | S3-compatible | Artifacts + source data |
 | Queue + workers | BullMQ / Celery | Ordered, retryable delivery off the request path |
@@ -300,7 +300,7 @@ Product Category end-to-end: form → validate → transform → generate → st
 2. Octo+ webhook event schema + timeline — **ask Octo+**
 3. Whether one whitelisted relay IP covers all instances or whitelisting is per-instance — **ask Octo+**
 4. Encoding verification — **Phase 0 gate**
-5. Stack choice (Node vs Python) — **team decision, Phase 0**
+5. ~~Stack choice (Node vs Python)~~ — **resolved 2026-07-17: Node/NestJS** (see §6)
 6. Prefix values for the 7 repositories beyond `I_SKU` / `I_CAB` — **from lookup table**
 
 ## 10. Immediate next actions

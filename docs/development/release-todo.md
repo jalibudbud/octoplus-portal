@@ -17,6 +17,12 @@ Items moved from `todo.md` / `docs/project-plan.md` §10 once resolved.
       `docs/reference/` (all 8 v1 repositories verified against accepted
       samples in `docs/reference/samples/`)
 - [x] Request Octo+ test SFTP instance access *(2026-07-16)*
+- [x] Team stack decision *(2026-07-17)* — **Node/NestJS** for the portal
+      API (BFF): team ships production NestJS + BullMQ + blob storage today.
+      Modular monolith (storage / files / sftp-config / delivery modules);
+      relay worker (NestJS) is the second deployable. No Lambda in the
+      upload path; Go + Lambda reserved as a candidate for transform
+      compute (`etl-utility`). Recorded in `docs/project-plan.md` §6
 
 ## Dropped
 

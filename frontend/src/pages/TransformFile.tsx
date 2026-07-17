@@ -152,10 +152,10 @@ export default function TransformFile() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px]">
           {/* Left — data entry */}
           <div className="space-y-6">
-            <Tabs defaultValue="manual">
+            <Tabs defaultValue="upload">
               <TabsList>
-                <TabsTrigger value="manual">Manual entry</TabsTrigger>
                 <TabsTrigger value="upload">File upload</TabsTrigger>
+                <TabsTrigger value="manual">Manual entry</TabsTrigger>
               </TabsList>
 
               <TabsContent value="manual" className="mt-4">

@@ -3,15 +3,13 @@
 Working task list (source: `docs/project-plan.md` §10). Completed items move
 to `release-todo.md`.
 
-## Phase 0
+## Backlog
 
-- [ ] Provision France relay VM; submit its IP for whitelisting
-- [ ] Encoding round-trip test (é, è, à, ç, œ) against a test instance —
-      UTF-8 bytes already accepted in a real file (`Kärcher FZE`, see
-      `docs/reference/metadata.md`), but label display inside Octo+ is
-      still unverified
+See `backlog.md` for items that are not yet in the working task list.
 
 ## Phase 1 — Frontend POC (started 2026-07-16)
+
+### Frontend
 
 **Goal:** an interface where users can perform the mapping — create an
 Octo+ file without knowing the French format.
@@ -46,7 +44,7 @@ Tasks:
       values, applied as a constant to every output row. Remaining:
       field/set validation of mapped values, delimiter/decimal edge cases
 
-## Backend
+### Backend
 
 Stack decided 2026-07-17: **Node/NestJS** portal API (see
 `docs/project-plan.md` §6 and `release-todo.md`).

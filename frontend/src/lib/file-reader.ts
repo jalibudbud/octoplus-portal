@@ -41,12 +41,16 @@ export async function* streamRows(
 ): AsyncGenerator<string[]> {
   const { maxRows, delimiter, hasHeader = true } = options ?? {}
 
-  // Build index: for each target field, the source column index (or -1 = skip)
+  // Build index: for each target field, the source column index (or -1 = skip).
+  // Enum fields map to a fixed enum value, not a source column.
   const sourceIndexes: number[] = targetFields.map((field) => {
     const sourceCol = mapping[field.name]
-    if (!sourceCol) return -1
+    if (!sourceCol || field.type === 'enum') return -1
     return sourceColumns.indexOf(sourceCol)
   })
+  const constantValues: (string | null)[] = targetFields.map((field) =>
+    field.type === 'enum' ? (mapping[field.name] ?? null) : null,
+  )
 
   const stream = file.stream().pipeThrough(new TextDecoderStream('utf-8'))
   const reader = stream.getReader()
@@ -84,9 +88,9 @@ export async function* streamRows(
 
       const mappedRow: string[] = sourceIndexes.map((idx, _i) => {
         if (idx === -1) {
-          // Use locked or default value if available
+          // Use fixed enum value, locked, or default value if available
           const field = targetFields[_i]
-          return field?.locked ?? field?.defaultValue ?? ''
+          return constantValues[_i] ?? field?.locked ?? field?.defaultValue ?? ''
         }
         return sourceCells[idx]?.trim() ?? ''
       })
@@ -104,7 +108,7 @@ export async function* streamRows(
       const mappedRow: string[] = sourceIndexes.map((idx, _i) => {
         if (idx === -1) {
           const field = targetFields[_i]
-          return field?.locked ?? field?.defaultValue ?? ''
+          return constantValues[_i] ?? field?.locked ?? field?.defaultValue ?? ''
         }
         return sourceCells[idx]?.trim() ?? ''
       })

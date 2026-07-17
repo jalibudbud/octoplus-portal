@@ -19,6 +19,23 @@ interface ColumnMapperProps {
 
 const SKIP_VALUE = '__skip__'
 
+function FieldOptions({ field, sourceColumns }: { field: FieldDef; sourceColumns: string[] }) {
+  if (field.type === 'enum' && field.enumOptions) {
+    return field.enumOptions
+      .filter((opt) => opt.value !== '')
+      .map((opt) => (
+        <SelectItem key={opt.value} value={opt.value}>
+          {opt.label}
+        </SelectItem>
+      ))
+  }
+  return sourceColumns.map((col) => (
+    <SelectItem key={col} value={col}>
+      {col}
+    </SelectItem>
+  ))
+}
+
 export function ColumnMapper({
   schema,
   sourceColumns,
@@ -46,7 +63,7 @@ export function ColumnMapper({
         {visibleFields.map((field) => (
           <div key={field.name} className="flex items-center gap-3 px-3 py-2">
             <div className="w-44 shrink-0">
-              <p className="font-mono text-[10px] font-medium text-foreground">
+              <p className="">
                 {field.name}
                 {field.required && <span className="text-destructive ml-0.5">*</span>}
               </p>
@@ -64,11 +81,7 @@ export function ColumnMapper({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={SKIP_VALUE}>— skip —</SelectItem>
-                {sourceColumns.map((col) => (
-                  <SelectItem key={col} value={col}>
-                    {col}
-                  </SelectItem>
-                ))}
+                <FieldOptions field={field} sourceColumns={sourceColumns} />
               </SelectContent>
             </Select>
           </div>

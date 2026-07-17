@@ -40,6 +40,12 @@ Tasks:
 - [ ] Schema-driven form per repository: English labels/help text, required
       markers, enum dropdowns, defaults pre-filled (per the reference docs)
 - [ ] Show the resulting Octo+ row(s)/CSV so the EN→FR mapping is visible
+- [ ] CSV import with column mapping (started ahead of plan, 2026-07-17):
+      upload a source file and map its columns to schema fields
+      (`frontend/src/components/transform/ColumnMapper.tsx`). Enum fields
+      don't map to a source column — the user picks one of the field's enum
+      values, applied as a constant to every output row. Remaining:
+      field/set validation of mapped values, delimiter/decimal edge cases
 
 ## Backend
 

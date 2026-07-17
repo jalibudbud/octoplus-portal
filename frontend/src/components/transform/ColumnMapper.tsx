@@ -46,7 +46,7 @@ export function ColumnMapper({
   const visibleFields = schema.fields.filter((f): f is FieldDef => f.locked === undefined)
 
   const requiredUnmapped = visibleFields.filter(
-    (f) => f.required && !mapping[f.name],
+    (f) => f.required && !mapping[f.name] && !f.defaultValue,
   )
   const canConfirm = requiredUnmapped.length === 0
 

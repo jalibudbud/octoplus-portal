@@ -77,6 +77,11 @@ export default function TransformFile() {
     setMapping((prev) => ({ ...prev, [fieldName]: sourceColumn }))
   }
 
+  function handleBackToMapping() {
+    setMappingConfirmed(false)
+    setPreviewRows([])
+  }
+
   async function handleMappingConfirm() {
     if (!uploadedFile) return
     setMappingConfirmed(true)
@@ -181,11 +186,21 @@ export default function TransformFile() {
                 )}
 
                 {mappingConfirmed && (
-                  <DataPreview
-                    schema={schema}
-                    rows={previewRows}
-                    isStreaming={isStreaming}
-                  />
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleBackToMapping}
+                      className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <ArrowLeft className="h-3 w-3" strokeWidth={1.5} />
+                      Edit mapping
+                    </button>
+                    <DataPreview
+                      schema={schema}
+                      rows={previewRows}
+                      isStreaming={isStreaming}
+                    />
+                  </>
                 )}
 
                 {mappingConfirmed && !isStreaming && (

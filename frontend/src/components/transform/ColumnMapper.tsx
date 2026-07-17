@@ -69,9 +69,8 @@ export function ColumnMapper({
               </p>
               <p className="text-[9px] text-muted-foreground">{field.label}</p>
             </div>
-
             <Select
-              value={mapping[field.name] ?? SKIP_VALUE}
+              value={mapping[field.name] || field.defaultValue || SKIP_VALUE}
               onValueChange={(val) =>
                 onMappingChange(field.name, val === SKIP_VALUE ? null : (val as string))
               }
